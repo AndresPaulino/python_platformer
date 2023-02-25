@@ -17,9 +17,26 @@ PLAYER_VEL = 5
 # WINDOW
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 
+def flip(sprites):
+    return [pygame.transform.flip(sprite, True, False) for sprite in sprites]
+
+def load_sprite_sheets(dir1, dir2, width, height, direction=False):
+    path = join("assets", dir1, dir2)
+    
+    # Loads ever file inside the given directory
+    images = [f for f in listdir(path) if isfile(join(path, f))]
+    
+    all_sprites = {}
+
+    for image in images: 
+        sprite_sheet = pygame.image.load(join(path, image)).convert_alpha()
+    
+
 # PLAYER
 class Player(pygame.sprite.Sprite):
     COLOR = (255, 0, 0)
+    GRAVITY = 1
+    
     def __init__(self, x, y, width, height):
         # Set player rect to the given x, y, width, and height
         self.rect = pygame.Rect(x, y, width, height)
@@ -29,6 +46,7 @@ class Player(pygame.sprite.Sprite):
         self.mask = None
         self.direction = "left"
         self.animation_count = 0
+        self.fall_count = 0
         
     def move(self, dx, dy):
         # Move the player in the x and y direction
@@ -48,7 +66,10 @@ class Player(pygame.sprite.Sprite):
             self.animation_count = 0
             
     def loop(self, fps):
+        self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY)
         self.move(self.x_vel, self.y_vel)
+        
+        self.fall_count += 1
         
     def draw(self, window):
         pygame.draw.rect(window, self.COLOR, self.rect)
