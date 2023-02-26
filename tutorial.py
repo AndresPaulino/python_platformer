@@ -17,6 +17,7 @@ PLAYER_VEL = 5
 # WINDOW
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 
+# SPRITES
 def flip(sprites):
     return [pygame.transform.flip(sprite, True, False) for sprite in sprites]
 
@@ -51,11 +52,11 @@ def load_sprite_sheets(dir1, dir2, width, height, direction=False):
             
     return all_sprites
     
-
 # PLAYER
 class Player(pygame.sprite.Sprite):
     COLOR = (255, 0, 0)
     GRAVITY = 1
+    SPRITES = load_sprite_sheets("MainCharacters", "MaskDude", 32, 32, True)
     
     def __init__(self, x, y, width, height):
         # Set player rect to the given x, y, width, and height
@@ -86,13 +87,14 @@ class Player(pygame.sprite.Sprite):
             self.animation_count = 0
             
     def loop(self, fps):
-        self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY)
+        # self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY)
         self.move(self.x_vel, self.y_vel)
         
         self.fall_count += 1
         
     def draw(self, window):
-        pygame.draw.rect(window, self.COLOR, self.rect)
+        self.sprite = self.SPRITES["idle_" + self.direction][0]
+        window.blit(self.sprite, (self.rect.x, self.rect.y))
 
 # BACKGROUND
 def get_background(name):
