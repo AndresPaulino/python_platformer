@@ -23,13 +23,33 @@ def flip(sprites):
 def load_sprite_sheets(dir1, dir2, width, height, direction=False):
     path = join("assets", dir1, dir2)
     
-    # Loads ever file inside the given directory
+    # Loads every file inside the given directory
     images = [f for f in listdir(path) if isfile(join(path, f))]
     
     all_sprites = {}
 
+    # Loops through every image in the directory
     for image in images: 
         sprite_sheet = pygame.image.load(join(path, image)).convert_alpha()
+        
+        sprites = []
+        
+        
+        # Loops through every sprite in the sprite sheet and adds it to the sprites list (doulbe the size of the sprite)
+        for i in range(sprite_sheet.get_width() // width):
+            surface = pygame.Surface((width, height), pygame.SRCALPHA)
+            rect = pygame.Rect(i * width, 0, width, height)
+            surface.blit(sprite_sheet, (0, 0), rect)
+            sprites.append(pygame.transform.scale2x(surface))
+            
+        # Handles if the sprite is facing left or right. Replaces .png with _right or _left
+        if direction: 
+            all_sprites[image.replace(".png", "") + "_right"] = sprites
+            all_sprites[image.replace(".png", "") + "_left"] = flip(sprites)
+        else:
+            all_sprites[image.replace(".png", "")] = sprites
+            
+    return all_sprites
     
 
 # PLAYER
