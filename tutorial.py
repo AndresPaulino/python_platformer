@@ -51,6 +51,16 @@ def load_sprite_sheets(dir1, dir2, width, height, direction=False):
             all_sprites[image.replace(".png", "")] = sprites
             
     return all_sprites
+
+# Grabs the block image from the terrain.png file. 96, 0 is the x and y position of the block in the sprite sheet
+def get_block(size):
+    path = join("assets", "Terrain", "Terrain.png")
+    image = pygame.image.load(path).convert_alpha()
+    surface = pygame.Surface((size, size), pygame.SRCALPHA, 32)
+    rect = pygame.Rect(96, 0, size, size)
+    surface.blit(image, (0, 0), rect)
+    return pygame.transform.scale2x(surface)
+    
     
 # PLAYER
 class Player(pygame.sprite.Sprite):
@@ -60,6 +70,7 @@ class Player(pygame.sprite.Sprite):
     ANIMATION_DELAY = 4
     
     def __init__(self, x, y, width, height):
+        super().__init__()
         # Set player rect to the given x, y, width, and height
         self.rect = pygame.Rect(x, y, width, height)
         # Set player x and y velocity to 0 (not moving)
@@ -114,6 +125,26 @@ class Player(pygame.sprite.Sprite):
         
     def draw(self, window):
         window.blit(self.sprite, (self.rect.x, self.rect.y))
+
+# Define a class for all objects in the game
+class Object(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height, name=None):
+        super().__init__()
+        self.rect = pygame.Rect(x, y, width, height)
+        self.image = pygame.Surface((width, height), pygame.SRCALPHA)
+        self.width = width
+        self.height = height
+        self.name = name
+        
+    def draw(self, win):
+        win.blit(self.image, (self.rect.x, self.rect.y))
+
+class Block(Object):
+    def __init__(self, x, y, size):
+        super().__init__(x, y, size, size)
+        block = get_block(size)
+        self.image.blit(block, (0, 0))
+        self.mask = pygame.mask.from_surface(self.image)
 
 # BACKGROUND
 def get_background(name):
